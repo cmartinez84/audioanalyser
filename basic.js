@@ -8,9 +8,10 @@ document.body.appendChild(audio);
 var index = 0;
 var audioCtx = new AudioContext();
 var analyser = audioCtx.createAnalyser();
+analyser.smoothingTimeConstant = .95;
 var filter = audioCtx.createBiquadFilter();
 var audioBuffer;
-
+var frequencyData;
 
 /////________________________________________________________
 var c = document.getElementById("canvas");
@@ -18,13 +19,10 @@ var ctx = c.getContext("2d");
 /////________________________________________________________
 window.addEventListener('load', function(e) {
   var source = audioCtx.createMediaElementSource(audio);
-
-
   source.connect(analyser);
   analyser.connect(audioCtx.destination);
-  var frequencyData = new Uint8Array(analyser.frequencyBinCount);
-
-
+   frequencyData = new Uint8Array(analyser.frequencyBinCount);
+}, false);
 /////________________________________________________________
 function clear(){
     ctx.clearRect(0, 0, 800, 400);
@@ -50,10 +48,8 @@ function drawMultipleBars(frequencyData){
   function renderFrame() {
      requestAnimationFrame(renderFrame);
      analyser.getByteFrequencyData(frequencyData);
-    //  document.documentElement.style.setProperty(`--boxSize`, frequencyData[index] + "px");
-    clear();
+     clear();
     drawMultipleBars(frequencyData)
   }
 
   renderFrame();
-}, false);
